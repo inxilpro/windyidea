@@ -10,9 +10,10 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlAttribute
-import com.intellij.psi.xml.XmlTag
 
 internal class WindyIdeaDocumentListener : FileDocumentManagerListener {
+    private val classNameAttributes = setOf("class", "className")
+
     override fun beforeAllDocumentsSaving() {
         val unsavedDocuments = FileDocumentManager.getInstance().unsavedDocuments;
 
@@ -20,11 +21,9 @@ internal class WindyIdeaDocumentListener : FileDocumentManagerListener {
             val psiFile = getPsiFileForDocument(document) ?: continue;
 
             WriteCommandAction.runWriteCommandAction(psiFile.project) {
-                PsiTreeUtil.findChildrenOfType(psiFile, XmlTag::class.java).forEach { tag ->
-                    tag.attributes
-                        .filter { it.name == "class" || it.name == "className" }
-                        .forEach { formatHtmlClass(it) }
-                }
+                PsiTreeUtil.findChildrenOfType(psiFile, XmlAttribute::class.java)
+                    .filter { classNameAttributes.contains(it.name) }
+                    .forEach { formatHtmlClass(it) }
             }
         }
     }
