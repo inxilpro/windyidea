@@ -17,11 +17,13 @@ internal class WindyIdeaDocumentListener : FileDocumentManagerListener {
         val unsavedDocuments = FileDocumentManager.getInstance().unsavedDocuments;
 
         for (document in unsavedDocuments) {
-            val psiFile = getPsiFileForDocument(document) ?: continue
+            val psiFile = getPsiFileForDocument(document) ?: continue;
 
             WriteCommandAction.runWriteCommandAction(psiFile.project) {
                 PsiTreeUtil.findChildrenOfType(psiFile, XmlTag::class.java).forEach { tag ->
-                    tag.attributes.filter { it.name == "class" }.forEach { formatHtmlClass(it) }
+                    tag.attributes
+                        .filter { it.name == "class" || it.name == "className" }
+                        .forEach { formatHtmlClass(it) }
                 }
             }
         }
