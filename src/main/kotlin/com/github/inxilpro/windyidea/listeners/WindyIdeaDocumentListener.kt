@@ -1,6 +1,7 @@
 package com.github.inxilpro.windyidea.listeners
 
 import com.github.inxilpro.windyidea.ClassNameSorter
+import com.intellij.lang.html.HTMLLanguage
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
@@ -38,6 +39,9 @@ internal class WindyIdeaDocumentListener : FileDocumentManagerListener {
         val editor = allEditors.firstOrNull { it.document == document } ?: return null
         val project = editor.project ?: return null
 
-        return PsiDocumentManager.getInstance(project).getPsiFile(document)
+        return PsiDocumentManager.getInstance(project)
+            .getPsiFile(document)
+            ?.viewProvider
+            ?.getPsi(HTMLLanguage.INSTANCE)
     }
 }
